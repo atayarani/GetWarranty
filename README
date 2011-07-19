@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 CONFIGURE
 ------
+* Rename database.git to database.py
 * In database.py, you'll need to fill in the MySQL connection string.  If you'd
 rather not use MySQL, you'll also need to replace MySQLdb with your module of
 choice.
