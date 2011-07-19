@@ -31,7 +31,7 @@ CONFIGURE
 * In database.py, you'll need to fill in the MySQL connection string.  If you'd
 rather not use MySQL, you'll also need to replace MySQLdb with your module of
 choice.
-
+* In hostinfo.py, change the sleep(randint()) as desired for load balancing.
 
 KNOWN ISSUES
 ------
