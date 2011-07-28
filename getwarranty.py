@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from database import Database
 from datetime import datetime,timedelta
+from MySQLdb import OperationalError
 from re import match,split
 from sys import exit,stderr
 from time import mktime,sleep,strftime,strptime
@@ -23,8 +24,10 @@ class Warranty(object):
             if 'vmware' in vendor.lower(): continue
             try:
                 self.getwarranty(host,sku,type,serial,vendor)
-            except Exception,e:
+            except OperationalError:
                 self.db.rollback(e)
+            except ValueError:
+                continue
 
     def getwarranty(self,host,sku,type,serial,vendor):
         lvendor=vendor.lower()
@@ -41,13 +44,20 @@ class Warranty(object):
                  "WarrantyResults.jsp?lang=en&cc=us&prodSeriesId=454811&"
                  "prodTypeId=12454&sn=%s&pn=%s&country=US&nickname=&"
                  "find=Display+Warranty+Information" % (serial,sku))
+        else:
+            return
 
         file=urlopen(url)
         lines=split('>|<',file.read())
         dates=[convertdate(line) for line in lines if convertdate(line)]
 
-        warranty_start=strftime("%Y-%m-%d",min(dates))
-        warranty_end=strftime("%Y-%m-%d",max(dates))
+        try:
+            warranty_start=strftime("%Y-%m-%d",min(dates))
+            warranty_end=strftime("%Y-%m-%d",max(dates))
+        except:
+            warranty_start=None
+            warranty_end=None
+
         if warranty_start == warranty_end: warranty_start = None
 
         sqlcode='''UPDATE warranty 
